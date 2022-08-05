@@ -65,6 +65,52 @@ class MyPromise {
       })
     }
   }
+
+  catch(onReject) {
+    return this.then(undefined, onReject);
+  }
+
+  static resolve(value) {
+    return new MyPromise((res, rej) => {
+      res(value);
+    })
+  }
+
+  static reject(value) {
+    return new MyPromise((res, rej) => {
+      rej(value);
+    })
+  }
+
+  static all(promiseArr) {
+    return new MyPromise((resolve, reject) => {
+      const res = [];
+      let successCount = 0;
+      for (let i = 0; i < promiseArr.length; i++) {
+        promiseArr[i].then(data => {
+          successCount++;
+          res[i] = data;
+          if (successCount === promiseArr.length) {
+            resolve(res);
+          }
+        }, e => {
+          reject(e);
+        })
+      }
+    })
+  }
+
+  static race(promiseArr) {
+    return new MyPromise((resolve, reject) => {
+      for (let i = 0; i < promiseArr.length; i++) {
+        promiseArr[i].then(data => {
+          resolve(data);
+        }, e => {
+          reject(e);
+        })
+      }
+    })
+  }
 }
 
 // 测试
